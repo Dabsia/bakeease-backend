@@ -1,0 +1,215 @@
+import Product from "../models/Product.model.js";
+import { UploadService } from "../services/uploadImage.js";
+import fs from "fs";
+
+// Create product with image
+export const createProduct = async (req, res) => {
+  try {
+    const { name, price, category, ingredients, loafSize, description } =
+      req.body;
+
+    // Validate required fields
+    if (
+      !name ||
+      !price ||
+      !category ||
+      !description ||
+      !loafSize ||
+      !ingredients
+    ) {
+      // Clean up uploaded file if validation fails
+      if (req.file && fs.existsSync(req.file.path)) {
+        fs.unlinkSync(req.file.path);
+      }
+
+      return res.status(400).json({
+        success: false,
+        message:
+          "Name, price, category, loafSize, description, inngredients are required",
+      });
+    }
+
+    // Validate image
+    if (!req.file) {
+      return res.status(400).json({
+        success: false,
+        message: "Product image is required",
+      });
+    }
+
+    // Upload image to Cloudinary
+    const uploadedImage = await UploadService.uploadSingleAndClean(
+      req.file,
+      "products"
+    );
+
+    // Create product in database
+    const product = await Product.create({
+      name,
+      price: Number(price),
+      category,
+      image: uploadedImage,
+      ingredients,
+      description,
+      loafSize,
+    });
+
+    return res.status(201).json({
+      success: true,
+      message: "Product created successfully",
+      data: product,
+    });
+  } catch (error) {
+    // Clean up file if it exists
+    if (req.file && fs.existsSync(req.file.path)) {
+      fs.unlinkSync(req.file.path);
+    }
+
+    return res.status(500).json({
+      success: false,
+      message: error.message || "Failed to create product",
+    });
+  }
+};
+
+// Get all products
+export const getAllProducts = async (req, res) => {
+  try {
+    const products = await Product.find();
+
+    return res.status(200).json({
+      success: true,
+      count: products.length,
+      data: products,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message || "Failed to fetch products",
+    });
+  }
+};
+
+// Get single product
+export const getProductById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const product = await Product.findById(id);
+
+    if (!product) {
+      return res.status(404).json({
+        success: false,
+        message: "Product not found",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      data: product,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message || "Failed to fetch product",
+    });
+  }
+};
+
+// Update product
+export const updateProduct = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { name, price, category, ingredients, description, loafSize } =
+      req.body;
+
+    // Find existing product
+    const product = await Product.findById(id);
+
+    if (!product) {
+      // Clean up uploaded file if exists
+      if (req.file && fs.existsSync(req.file.path)) {
+        fs.unlinkSync(req.file.path);
+      }
+
+      return res.status(404).json({
+        success: false,
+        message: "Product not found",
+      });
+    }
+
+    // Handle image update if new image provided
+    let imageData = product.image;
+    if (req.file) {
+      // Delete old image from Cloudinary
+      await UploadService.deleteImageFromCloud(product.image.publicId);
+
+      // Upload new image
+      imageData = await UploadService.uploadSingleAndClean(
+        req.file,
+        "products"
+      );
+    }
+
+    // Update product
+    const updatedProduct = await Product.findByIdAndUpdate(
+      id,
+      {
+        name: name || product.name,
+        price: price !== undefined ? Number(price) : product.price,
+        category: category || product.category,
+        ingredients: ingredients || product.ingredients,
+        loafSize: loafSize || product.loafSize,
+        description: description || product.description,
+        image: imageData,
+      },
+      { new: true }
+    );
+
+    return res.status(200).json({
+      success: true,
+      message: "Product updated successfully",
+      data: updatedProduct,
+    });
+  } catch (error) {
+    // Clean up file if it exists
+    if (req.file && fs.existsSync(req.file.path)) {
+      fs.unlinkSync(req.file.path);
+    }
+
+    return res.status(500).json({
+      success: false,
+      message: error.message || "Failed to update product",
+    });
+  }
+};
+
+// Delete product
+export const deleteProduct = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const product = await Product.findById(id);
+    if (!product) {
+      return res.status(404).json({
+        success: false,
+        message: "Product not found",
+      });
+    }
+
+    // Delete image from Cloudinary
+    await UploadService.deleteImageFromCloud(product.image.publicId);
+
+    // Delete product from database
+    await Product.findByIdAndDelete(id);
+
+    return res.status(200).json({
+      success: true,
+      message: "Product deleted successfully",
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message || "Failed to delete product",
+    });
+  }
+};

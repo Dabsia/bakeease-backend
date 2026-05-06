@@ -1,0 +1,36 @@
+import {
+  getAllProducts,
+  createProduct,
+  getProductById,
+  updateProduct,
+  deleteProduct,
+} from "../controllers/product.controller.js   ";
+import express from "express";
+import { adminOnly, protect } from "../middleware/index.js";
+import { productValidator } from "../validators/productValidator.js";
+import { uploadSingle } from "../middleware/imageUpload.js";
+
+const router = express.Router();
+
+router.get("/", getAllProducts);
+router.post(
+  "/",
+  protect,
+  adminOnly,
+  productValidator,
+  uploadSingle("image"),
+  createProduct
+);
+
+router.get("/:id", getProductById);
+router.patch(
+  "/:id",
+  protect,
+  adminOnly,
+  productValidator,
+  uploadSingle("image"),
+  updateProduct
+);
+router.delete("/:id", protect, adminOnly, deleteProduct);
+
+export default router;

@@ -1,0 +1,36 @@
+{
+  "name": "bakeease",
+  "version": "1.0.0",
+  "main": "index.js",
+  "type": "module",
+ "scripts": {
+    "dev": "nodemon --env-file=.env index.js",
+    "start": "node --env-file=.env index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Dabsia/bakeease-backend.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Dabsia/bakeease-backend/issues"
+  },
+  "homepage": "https://github.com/Dabsia/bakeease-backend#readme",
+  "description": "",
+  "dependencies": {
+    "@sendgrid/mail": "^8.1.6",
+    "bcrypt": "^6.0.0",
+    "cloudinary": "^2.9.0",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "express-validator": "^7.3.2",
+    "jsonwebtoken": "^9.0.3",
+    "mongoose": "^9.5.0",
+    "multer": "^2.1.1",
+    "nodemon": "^3.1.14",
+    "resend": "^6.12.2",
+    "stripe": "^22.1.0"
+  }
+}
