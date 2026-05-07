@@ -1,4 +1,5 @@
 import express from "express";
+import cors from "cors";
 import "./db.js";
 import errorHandler from "./middleware/errorMiddleware.js";
 import authRouter from "./routes/auth.routes.js";
@@ -11,11 +12,20 @@ import { stripeWebhook } from "./controllers/checkout.controller.js";
 
 const app = express();
 
+app.use(
+  cors({
+    origin: ["http://localhost:5173"],
+    credentials: true,
+    methods: ["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  }),
+);
+
 // ⚠️ Webhook MUST be registered before express.json() — needs raw buffer
 app.post(
   "/api/v1/checkout/webhook",
   express.raw({ type: "application/json" }),
-  stripeWebhook
+  stripeWebhook,
 );
 
 app.use(express.json());
