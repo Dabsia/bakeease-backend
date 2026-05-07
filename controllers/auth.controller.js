@@ -92,6 +92,7 @@ export const login = async (req, res) => {
 
 export const resetPassword = (req, res) => {
   const { email } = req.body;
+
   crypto.randomBytes(32, (err, buffer) => {
     if (err) {
       console.log(err);
