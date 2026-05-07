@@ -112,7 +112,8 @@ export const resetPassword = (req, res) => {
         user.save();
       })
       .then((result) => {
-        const link = `https://tiarasbread.netlify.app/reset/${token}`;
+        const link = `http://tiarasbread.netlify.app/reset/${token}`;
+        // const link = `http://localhost:5173/reset/${token}`;
         sendEmail({
           to: email,
           subject: "Reset Password",
