@@ -1,6 +1,5 @@
 import { sendEmailToAdmin } from "../controllers/email.controller.js";
 import express from "express";
-// import { protect } from "../middleware/index.js";
 
 const router = express.Router();
 
