@@ -18,7 +18,7 @@ export const getUser = asyncHandler(async (req, res) => {
   if (!id) {
     throw new AppError("Id not found", 404);
   }
-  // ✅ validate ID first
+
   if (!mongoose.Types.ObjectId.isValid(id)) {
     throw new AppError("Invalid user ID", 400);
   }
