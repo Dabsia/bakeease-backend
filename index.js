@@ -20,7 +20,7 @@ app.use(
     allowedHeaders: ["Content-Type", "Authorization"],
   }),
 );
-app.options('*', cors());
+
 
 // ⚠️ Webhook MUST be registered before express.json() — needs raw buffer
 app.post(
