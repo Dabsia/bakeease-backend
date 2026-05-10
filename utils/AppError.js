@@ -5,5 +5,4 @@ class AppError extends Error {
     this.isOperational = true
   }
 }
-
 export default AppError;
