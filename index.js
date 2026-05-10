@@ -14,7 +14,7 @@ const app = express();
 
 app.use(
   cors({
-    origin: ["http://localhost:5173", 'https://tiarasbread.netlify.app'],
+    origin: ["http://localhost:5173", 'https://tiarasbread.netlify.app/'],
     credentials: true,
     methods: ["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
