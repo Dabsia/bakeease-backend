@@ -113,7 +113,7 @@ export const stripeWebhook = async (req, res) => {
           <p><strong>Items:</strong> ${order.items
             .map((i) => `${i.name} x${i.quantity}`)
             .join(", ")}</p>
-          <a href='https://ultimate-store.netlify.app/admin'>View order in admin</a>
+          <a href='https://tiarasbread.netlify.app/admin'>View order in admin</a>
         `,
       });
     }
