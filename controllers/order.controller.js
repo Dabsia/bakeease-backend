@@ -36,6 +36,7 @@ export const getOrdersByUser = async (req, res) => {
     // Find user's email first
     const user = await User.findById(userId);
     if (!user) return res.status(404).json({ message: "User not found" });
+    console.log(user)
 
     // Query by EITHER user ID or email — catches both old and new orders
     const orders = await Order.find({
