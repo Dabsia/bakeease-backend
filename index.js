@@ -7,7 +7,7 @@ import userRouter from "./routes/user.routes.js";
 import productRouter from "./routes/product.routes.js";
 import emailRouter from "./routes/email.routes.js";
 import orderRouter from "./routes/order.routes.js";
-import checkoutRoutes from "./routes/order.routes.js";
+import checkoutRoutes from "./routes/checkout.routes.js";
 import { stripeWebhook } from "./controllers/checkout.controller.js";
 
 const app = express();
