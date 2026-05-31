@@ -1,4 +1,3 @@
-// utils/cleanupPendingOrders.js
 import cron from "node-cron";
 import Order from "../model/Order.model.js";
 
@@ -12,7 +11,7 @@ export const startOrderCleanup = () => {
         paymentStatus: "pending",
         createdAt: { $lt: twoHoursAgo },
       },
-      { paymentStatus: "failed" }
+      { paymentStatus: "failed" },
     );
   });
 };

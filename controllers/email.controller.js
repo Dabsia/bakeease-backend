@@ -8,7 +8,6 @@ export const sendEmailToAdmin = async (req, res) => {
     to: "dabojohnson98@gmail.com",
     name: name,
     message: message,
-    // from: from,
     subject: "Enquiry",
     html: `<h1>${name} with Email address : ${from},  sent:
          ${message}</h1>`,
