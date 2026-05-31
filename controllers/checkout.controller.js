@@ -81,12 +81,11 @@ export const createCheckoutSession = async (req, res) => {
 export const stripeWebhook = async (req, res) => {
   const sig = req.headers["stripe-signature"];
   let event;
-
   try {
     event = stripe.webhooks.constructEvent(
       req.body,
       sig,
-      process.env.STRIPE_WEBHOOK_SECRET
+      process.env.STRIPE_WEBHOOK_SECRET,
     );
   } catch (err) {
     return res.status(400).send(`Webhook Error: ${err.message}`);
@@ -97,7 +96,7 @@ export const stripeWebhook = async (req, res) => {
     const order = await Order.findByIdAndUpdate(
       session.metadata.orderId,
       { paymentStatus: "paid", stripePaymentIntentId: session.payment_intent },
-      { new: true } // ← get the updated order back
+      { new: true }, // ← get the updated order back
     );
 
     // ✅ Send email only after payment is confirmed
@@ -125,7 +124,7 @@ export const stripeWebhook = async (req, res) => {
     if (sessionId) {
       await Order.findOneAndUpdate(
         { stripeSessionId: sessionId },
-        { paymentStatus: "paid", stripePaymentIntentId: pi.id }
+        { paymentStatus: "paid", stripePaymentIntentId: pi.id },
       );
     }
   }
