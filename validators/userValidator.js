@@ -12,20 +12,12 @@ export const registerValidator = [
     .withMessage("Role must be either admin or user"),
   body("password")
     .isLength({ min: 8 })
-    .isAlphanumeric()
-    .trim()
-    .withMessage(
-      "Password must be at least 8 characters and has characters and text"
-    ),
+    .withMessage("Password must be at least 8 characters"),
 ];
 
 export const loginValidator = [
   body("email").isEmail().normalizeEmail().withMessage("Must be a valid email"),
   body("password")
     .isLength({ min: 8 })
-    .trim()
-    //   .isAlphanumeric()
-    .withMessage(
-      "Password must be at least 8 characters and has characters and text"
-    ),
+    .withMessage("Password must be at least 8 characters"),
 ];
