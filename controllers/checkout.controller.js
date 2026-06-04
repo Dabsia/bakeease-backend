@@ -1,7 +1,7 @@
 import Order from "../models/Order.model.js";
 import { sendEmail } from "../services/sendEmail.js";
 
-const ADMIN_EMAIL = process.env.ADMIN_EMAIL || "dabojohnson98@gmail.com";
+const ADMIN_EMAIL = process.env.ADMIN_EMAIL || "tiarasbreadhub@gmail.com";
 
 // POST /api/v1/checkout/place-order
 export const placeOrder = async (req, res) => {
