@@ -64,10 +64,12 @@ export const placeOrder = async (req, res) => {
       paymentStatus: "pending",
     });
 
-    sendEmail({
-      to: ADMIN_EMAIL,
-      subject: `${order.firstName} ${order.lastName} just placed an order`,
-      html: `
+    try {
+      await sendEmail({
+        to: ADMIN_EMAIL,
+        replyTo: order.email,
+        subject: `${order.firstName} ${order.lastName} just placed an order`,
+        html: `
         <h1>New Order Received</h1>
         <p><strong>Customer:</strong> ${order.firstName} ${order.lastName}</p>
         <p><strong>Email:</strong> ${order.email}</p>
@@ -80,7 +82,10 @@ export const placeOrder = async (req, res) => {
           .join(", ")}</p>
         <a href='https://tiarasbread.netlify.app/admin'>View order in admin</a>
       `,
-    });
+      });
+    } catch (err) {
+      console.error("Order notification email failed:", err.message);
+    }
 
     res.status(201).json({ message: "Order placed successfully", order });
   } catch (error) {

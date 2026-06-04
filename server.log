@@ -1,0 +1,84 @@
+
+> bakeease@1.0.0 dev
+> nodemon --env-file=.env index.js
+
+[33m[nodemon] 3.1.14[39m
+[33m[nodemon] to restart at any time, enter `rs`[39m
+[33m[nodemon] watching path(s): *.*[39m
+[33m[nodemon] watching extensions: js,mjs,cjs,json[39m
+[32m[nodemon] starting `node --env-file=.env index.js`[39m
+◇ injected env (0) from .env // tip: ⌘ custom filepath { path: '/custom/path/.env' }
+Server is running on port 3000
+❌ Email transporter verification failed: Invalid login: 535 5.7.8 Authentication failed
+Connected to MongoDB
+📧 Sending email to: tiarasbreadhub@gmail.com Subject: chris-adjadje praise just placed an order
+❌ Failed to send email: Invalid login: 535 5.7.8 Authentication failed
+Order notification email failed: Failed to send email: Invalid login: 535 5.7.8 Authentication failed
+📧 Sending email to: tiarasbreadhub@gmail.com Subject: Moses Moses just placed an order
+❌ Failed to send email: Invalid login: 535 5.7.8 Authentication failed
+Order notification email failed: Failed to send email: Invalid login: 535 5.7.8 Authentication failed
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node --env-file=.env index.js`[39m
+◇ injected env (0) from .env // tip: ⌘ suppress logs { quiet: true }
+Server is running on port 3000
+❌ Email transporter verification failed: Invalid login: 535 5.7.8 Authentication failed
+Connected to MongoDB
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node --env-file=.env index.js`[39m
+◇ injected env (0) from .env // tip: ⌘ custom filepath { path: '/custom/path/.env' }
+Server is running on port 3000
+❌ Email transporter verification failed: Invalid login: 535 5.7.8 Authentication failed
+Connected to MongoDB
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node --env-file=.env index.js`[39m
+◇ injected env (0) from .env // tip: ◈ secrets for agents [www.dotenvx.com]
+Server is running on port 3000
+❌ Email transporter verification failed: Invalid login: 535 5.7.8 Authentication failed
+Connected to MongoDB
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node --env-file=.env index.js`[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node --env-file=.env index.js`[39m
+◇ injected env (0) from .env // tip: ⌘ multiple files { path: ['.env.local', '.env'] }
+Server is running on port 3000
+❌ Email transporter verification failed: Invalid login: 535 5.7.8 Authentication failed
+Connected to MongoDB
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node --env-file=.env index.js`[39m
+◇ injected env (0) from .env // tip: ⌘ multiple files { path: ['.env.local', '.env'] }
+file:///Users/mac/Documents/Backend/bakeease/node_modules/resend/dist/index.mjs:1061
+			if (!this.key) throw new Error("Missing API key. Pass it to the constructor `new Resend(\"re_123\")`");
+			                     ^
+
+Error: Missing API key. Pass it to the constructor `new Resend("re_123")`
+    at new Resend (file:///Users/mac/Documents/Backend/bakeease/node_modules/resend/dist/index.mjs:1061:25)
+    at file:///Users/mac/Documents/Backend/bakeease/services/sendEmail.js:81:16
+    at ModuleJob.run (node:internal/modules/esm/module_job:271:25)
+    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:547:26)
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:116:5)
+
+Node.js v22.12.0
+[31m[nodemon] app crashed - waiting for file changes before starting...[39m
+[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node --env-file=.env index.js`[39m
+◇ injected env (0) from .env // tip: ⌘ enable debugging { debug: true }
+file:///Users/mac/Documents/Backend/bakeease/node_modules/resend/dist/index.mjs:1061
+			if (!this.key) throw new Error("Missing API key. Pass it to the constructor `new Resend(\"re_123\")`file:///Users/mac/Documents/Backend/bakeease/node_modules/resend/dist/index.mjs:1061
+			if (!this.key) throw new Error("Missing API key. Pass it to the constructor `new Resend(\"re_123\")`");
+			                     ^
+
+Error: Missing API key. Pass it to the constructor `new Resend("re_123")`
+    at new Resend (file:///Users/mac/Documents/Backend/bakeease/node_modules/resend/dist/index.mjs:1061:25)
+    at file:///Users/mac/Documents/Backend/bakeease/services/sendEmail.js:81:16
+    at ModuleJob.run (node:internal/modules/esm/module_job:271:25)
+    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:[32m[nodemon] restarting due to changes...[39m
+[32m[nodemon] starting `node --env-file=.env index.js`[39m
+◇ injected env (0) from .env // tip: ⌘ custom filepath { path: '/custom/path/.env' }
+Server is running on port 3000
+Connected to MongoDB
+ starting `node --env-file=.env index.js`[39m
+◇ injected env (0) from .env // tip: ⌘ multiple files { path: ['.env.local', '.env'] }
+Server is running on port 3000
+Connected to MongoDB

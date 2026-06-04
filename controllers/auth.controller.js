@@ -34,11 +34,16 @@ export const createUser = async (req, res) => {
     message: "User created successfully",
     data: user,
   });
-  sendEmail({
-    to: user.email,
-    subject: "Welcome to Telia Bread Hub",
-    html: `<h1>Hello ${user.name} You just created your Account</h1>`,
-  });
+
+  try {
+    await sendEmail({
+      to: user.email,
+      subject: "Welcome to Telia Bread Hub",
+      html: `<h1>Hello ${user.name}, you just created your account</h1>`,
+    });
+  } catch (err) {
+    console.error("Welcome email failed:", err.message);
+  }
 };
 
 export const login = async (req, res) => {
@@ -90,43 +95,64 @@ export const login = async (req, res) => {
   }
 };
 
-export const resetPassword = (req, res) => {
+export const resetPassword = async (req, res) => {
   const { email } = req.body;
 
-  crypto.randomBytes(32, (err, buffer) => {
+  crypto.randomBytes(32, async (err, buffer) => {
     if (err) {
-      console.log(err);
+      console.error(err);
+      return res.status(500).json({
+        success: false,
+        message: "Something went wrong",
+        error: err.message,
+      });
     }
-    const token = buffer.toString("hex");
-    User.findOne({ email })
-      .then((user) => {
-        if (!user) {
-          res.status(200).json({
-            success: false,
-            message: "No account with that email found",
-          });
-        }
 
-        user.resetToken = token;
-        user.resetTokenExpiration = Date.now() + 3600000;
-        user.save();
-      })
-      .then((result) => {
-        const link = `http://tiarasbread.netlify.app/reset/${token}`;
-        // const link = `http://localhost:5173/reset/${token}`;
-        sendEmail({
+    const token = buffer.toString("hex");
+
+    try {
+      const user = await User.findOne({ email });
+
+      if (!user) {
+        return res.status(200).json({
+          success: false,
+          message: "No account with that email found",
+        });
+      }
+
+      user.resetToken = token;
+      user.resetTokenExpiration = Date.now() + 3600000;
+      await user.save();
+
+      const link = `http://tiarasbread.netlify.app/reset/${token}`;
+      try {
+        await sendEmail({
           to: email,
           subject: "Reset Password",
           html: `<h1>You requested a password reset</h1>
-                    <a href = ${link} >Click this link to set a password</a>
-                `,
+                  <a href="${link}">Click this link to set a new password</a>`,
         });
-        res.status(200).json({
-          success: true,
-          message: "An Email has been sent to you",
+      } catch (err) {
+        console.error("Password reset email failed:", err.message);
+        return res.status(500).json({
+          success: false,
+          message: "Failed to send reset email",
+          error: err.message,
         });
-      })
-      .catch((err) => console.log(err));
+      }
+
+      res.status(200).json({
+        success: true,
+        message: "An Email has been sent to you",
+      });
+    } catch (err) {
+      console.error("Reset password error:", err);
+      return res.status(500).json({
+        success: false,
+        message: "Something went wrong",
+        error: err.message,
+      });
+    }
   });
 };
 

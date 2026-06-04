@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "type": "module",
- "scripts": {
+  "scripts": {
     "dev": "nodemon --env-file=.env index.js",
     "start": "node --env-file=.env index.js"
   },
@@ -29,8 +29,9 @@
     "jsonwebtoken": "^9.0.3",
     "mongoose": "^9.5.0",
     "multer": "^2.1.1",
+    "nodemailer": "^6.9.13",
     "nodemon": "^3.1.14",
-    "resend": "^6.12.2",
+    "resend": "^6.12.4",
     "stripe": "^22.1.0"
   }
 }
