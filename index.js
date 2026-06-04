@@ -8,7 +8,6 @@ import productRouter from "./routes/product.routes.js";
 import emailRouter from "./routes/email.routes.js";
 import orderRouter from "./routes/order.routes.js";
 import checkoutRoutes from "./routes/checkout.routes.js";
-import { stripeWebhook } from "./controllers/checkout.controller.js";
 
 const app = express();
 
@@ -19,14 +18,6 @@ app.use(
     methods: ["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
   }),
-);
-
-
-// ⚠️ Webhook MUST be registered before express.json() — needs raw buffer
-app.post(
-  "/api/v1/checkout/webhook",
-  express.raw({ type: "application/json" }),
-  stripeWebhook,
 );
 
 app.use(express.json());

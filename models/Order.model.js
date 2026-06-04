@@ -13,6 +13,7 @@ const orderSchema = new mongoose.Schema(
     city: { type: String, required: true },
     additionalInfo: { type: String },
     user: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+
     // Order Items
     items: [
       {
@@ -32,9 +33,13 @@ const orderSchema = new mongoose.Schema(
     shippingCost: { type: Number, default: 0 },
     total: { type: Number, required: true },
 
-    // Stripe
-    stripePaymentIntentId: { type: String },
-    stripeSessionId: { type: String },
+    // Payment
+    paymentMethod: {
+      type: String,
+      enum: ["bank_transfer"],
+      required: true,
+    },
+    paymentReference: { type: String, required: true },
 
     // Status
     paymentStatus: {

@@ -1,19 +1,26 @@
-import Stripe from "stripe";
 import Order from "../models/Order.model.js";
 import { sendEmail } from "../services/sendEmail.js";
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+const ADMIN_EMAIL = process.env.ADMIN_EMAIL || "dabojohnson98@gmail.com";
 
-// POST /api/v1/checkout/create-session
-export const createCheckoutSession = async (req, res) => {
+// POST /api/v1/checkout/place-order
+export const placeOrder = async (req, res) => {
   try {
-    const { items, customer, subtotal, total } = req.body;
+    const {
+      items,
+      customer,
+      subtotal,
+      total,
+      paymentMethod,
+      paymentReference,
+    } = req.body;
 
-    if (!items || items.length === 0)
+    if (!items?.length)
       return res.status(400).json({ message: "Cart is empty" });
 
     if (
       !customer?.firstName ||
+      !customer?.lastName ||
       !customer?.email ||
       !customer?.phone ||
       !customer?.streetAddress ||
@@ -24,14 +31,11 @@ export const createCheckoutSession = async (req, res) => {
         .status(400)
         .json({ message: "Missing required billing fields" });
 
-    const lineItems = items.map((item) => ({
-      price_data: {
-        currency: "eur",
-        product_data: { name: item.name },
-        unit_amount: Math.round(item.price * 100),
-      },
-      quantity: item.quantity,
-    }));
+    if (!paymentMethod)
+      return res.status(400).json({ message: "Payment method is required" });
+
+    if (!paymentReference)
+      return res.status(400).json({ message: "Payment reference is required" });
 
     const orderItems = items.map((item) => ({
       product: item.productId,
@@ -55,102 +59,31 @@ export const createCheckoutSession = async (req, res) => {
       subtotal,
       shippingCost: 0,
       total,
+      paymentMethod,
+      paymentReference,
       paymentStatus: "pending",
     });
 
-    const session = await stripe.checkout.sessions.create({
-      payment_method_types: ["card"],
-      line_items: lineItems,
-      mode: "payment",
-      customer_email: customer.email,
-      metadata: { orderId: order._id.toString() },
-      success_url: `${process.env.CLIENT_URL}/checkout?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${process.env.CLIENT_URL}/checkout?cancelled=true`,
+    sendEmail({
+      to: ADMIN_EMAIL,
+      subject: `${order.firstName} ${order.lastName} just placed an order`,
+      html: `
+        <h1>New Order Received</h1>
+        <p><strong>Customer:</strong> ${order.firstName} ${order.lastName}</p>
+        <p><strong>Email:</strong> ${order.email}</p>
+        <p><strong>Phone:</strong> ${order.phone}</p>
+        <p><strong>Total:</strong> €${order.total}</p>
+        <p><strong>Payment method:</strong> ${order.paymentMethod}</p>
+        <p><strong>Payment reference:</strong> ${order.paymentReference}</p>
+        <p><strong>Items:</strong> ${order.items
+          .map((i) => `${i.name} x${i.quantity}`)
+          .join(", ")}</p>
+        <a href='https://tiarasbread.netlify.app/admin'>View order in admin</a>
+      `,
     });
 
-    order.stripeSessionId = session.id;
-    await order.save();
-
-    res.status(200).json({ sessionId: session.id, url: session.url });
+    res.status(201).json({ message: "Order placed successfully", order });
   } catch (error) {
     res.status(500).json({ message: "Checkout failed", error: error.message });
-  }
-};
-
-// POST /api/v1/checkout/webhook  ← must use express.raw() in routes
-export const stripeWebhook = async (req, res) => {
-  const sig = req.headers["stripe-signature"];
-  let event;
-  try {
-    event = stripe.webhooks.constructEvent(
-      req.body,
-      sig,
-      process.env.STRIPE_WEBHOOK_SECRET,
-    );
-  } catch (err) {
-    return res.status(400).send(`Webhook Error: ${err.message}`);
-  }
-
-  if (event.type === "checkout.session.completed") {
-    const session = event.data.object;
-    const order = await Order.findByIdAndUpdate(
-      session.metadata.orderId,
-      { paymentStatus: "paid", stripePaymentIntentId: session.payment_intent },
-      { new: true }, // ← get the updated order back
-    );
-
-    // ✅ Send email only after payment is confirmed
-    if (order) {
-      sendEmail({
-        to: "dabojohnson98@gmail.com",
-        subject: `${order.firstName} ${order.lastName} just placed an order`,
-        html: `
-          <h1>New Order Received</h1>
-          <p><strong>Customer:</strong> ${order.firstName} ${order.lastName}</p>
-          <p><strong>Email:</strong> ${order.email}</p>
-          <p><strong>Total:</strong> €${order.total}</p>
-          <p><strong>Items:</strong> ${order.items
-            .map((i) => `${i.name} x${i.quantity}`)
-            .join(", ")}</p>
-          <a href='https://tiarasbread.netlify.app/admin'>View order in admin</a>
-        `,
-      });
-    }
-  }
-
-  if (event.type === "payment_intent.succeeded") {
-    const pi = event.data.object;
-    const sessionId = pi.payment_details?.order_reference;
-    if (sessionId) {
-      await Order.findOneAndUpdate(
-        { stripeSessionId: sessionId },
-        { paymentStatus: "paid", stripePaymentIntentId: pi.id },
-      );
-    }
-  }
-
-  if (event.type === "checkout.session.expired") {
-    await Order.findByIdAndUpdate(event.data.object.metadata.orderId, {
-      paymentStatus: "failed",
-    });
-  }
-
-  res.json({ received: true });
-};
-
-// GET /api/v1/checkout/success?session_id=...
-export const verifyPayment = async (req, res) => {
-  try {
-    const { session_id } = req.query;
-    const session = await stripe.checkout.sessions.retrieve(session_id);
-    const order = await Order.findOne({ stripeSessionId: session_id });
-
-    if (!order) return res.status(404).json({ message: "Order not found" });
-
-    res.status(200).json({ order, paymentStatus: session.payment_status });
-  } catch (error) {
-    res
-      .status(500)
-      .json({ message: "Verification failed", error: error.message });
   }
 };

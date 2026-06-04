@@ -1,12 +1,8 @@
 import express from "express";
-import {
-  createCheckoutSession,
-  verifyPayment,
-} from "../controllers/checkout.controller.js";
+import { placeOrder } from "../controllers/checkout.controller.js";
 
 const router = express.Router();
 
-router.post("/create-session", createCheckoutSession);
-router.get("/success", verifyPayment);
+router.post("/place-order", placeOrder);
 
 export default router;

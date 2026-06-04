@@ -1,10 +1,12 @@
 import Order from "../models/Order.model.js";
 import User from "../models/User.model.js";
 
-// Get all orders — paid only for admin dashboard
+// Get all orders — excludes failed/cancelled payments for admin dashboard
 export const getOrders = async (req, res) => {
   try {
-    const orders = await Order.find({ paymentStatus: "paid" }).sort({
+    const orders = await Order.find({
+      paymentStatus: { $in: ["pending", "paid"] },
+    }).sort({
       createdAt: -1,
     });
     res.status(200).json(orders);
@@ -41,7 +43,7 @@ export const getOrdersByUser = async (req, res) => {
     // Query by EITHER user ID or email — catches both old and new orders
     const orders = await Order.find({
       $or: [{ user: userId }, { email: user.email }],
-      paymentStatus: "paid",
+      paymentStatus: { $in: ["pending", "paid"] },
     }).sort({ createdAt: -1 });
 
     res.status(200).json(orders);
@@ -51,15 +53,23 @@ export const getOrdersByUser = async (req, res) => {
       .json({ message: "Failed to fetch user orders", error: error.message });
   }
 };
-// Update order status (admin: mark as shipped, delivered, cancelled)
+// Update order status (admin: mark as shipped, delivered, cancelled, or payment confirmed)
 export const updateOrderStatus = async (req, res) => {
   try {
-    const { orderStatus } = req.body;
-    const order = await Order.findByIdAndUpdate(
-      req.params.id,
-      { orderStatus },
-      { new: true, runValidators: true }
-    );
+    const { orderStatus, paymentStatus } = req.body;
+    const updates = {};
+    if (orderStatus) updates.orderStatus = orderStatus;
+    if (paymentStatus) updates.paymentStatus = paymentStatus;
+
+    if (!Object.keys(updates).length)
+      return res
+        .status(400)
+        .json({ message: "Provide orderStatus and/or paymentStatus to update" });
+
+    const order = await Order.findByIdAndUpdate(req.params.id, updates, {
+      new: true,
+      runValidators: true,
+    });
     if (!order) return res.status(404).json({ message: "Order not found" });
     res.status(200).json({ message: "Order status updated", order });
   } catch (error) {
